@@ -1,78 +1,43 @@
 
-# ClipForge Backend
+# FrameFlow Backend
 
-This backend provides video processing APIs for **caption generation, editing, and chat-based modifications** using component models like Whisper for transcription.  
+This is the backend for **FrameFlow**, an AI-powered video editor. It provides APIs to process videos, generate transcripts, apply automated edit rules, and execute AI chat commands that modify the video edits. Built with **FastAPI** and **MoviePy**.
 
 ---
 
 ## Table of Contents
-
-- [Requirements](#requirements)  
-- [Installation](#installation)  
+```
+- [Project Overview](#project-overview)  
+- [Features](#features)  
 - [Folder Structure](#folder-structure)  
-- [Running the Server](#running-the-server)  
+- [Getting Started](#getting-started)  
 - [API Endpoints](#api-endpoints)  
-- [Troubleshooting](#troubleshooting)  
-
+- [Requirements](#requirements)  
+- [Technologies](#technologies)  
+- [Contributing](#contributing)  
+```
 ---
 
-## Requirements
+## Project Overview
+```
+The backend handles:
 
-- Python 3.10+  
-- FFmpeg installed and added to your system PATH  
-- Virtual environment (recommended)  
+- Uploading and storing videos.
+- Extracting audio and generating transcripts using **Whisper**.
+- Applying edit rules for captions, styles, and animations.
+- Applying AI chat commands (e.g., “Make captions bolder”, “Remove animation”).
+- Rendering final videos with captions and overlays using **MoviePy**.
 
-Python packages (from `requirements.txt`):
-
-- fastapi  
-- uvicorn  
-- whisper  
-- moviepy  
-- python-multipart  
-
+The frontend communicates with this backend via JSON requests over **FastAPI endpoints**.
+```
 ---
 
-## Installation
+## Features
 
-1. **Clone the repository**:
-
-```bash
-git clone <repo-url>
-cd Auraverse
-````
-
-2. **Create a virtual environment**:
-
-```bash
-python -m venv venv
-```
-
-3. **Activate the virtual environment**:
-
-**Windows (PowerShell):**
-
-```powershell
-.\venv\Scripts\Activate.ps1
-```
-
-**Windows (cmd):**
-
-```cmd
-venv\Scripts\activate
-```
-
-4. **Install dependencies**:
-
-```bash
-pip install --upgrade pip
-pip install -r requirements.txt
-```
-
-5. **Ensure directories exist** (uploads & outputs):
-
-```bash
-mkdir uploads outputs
-```
+- **Video Upload & Processing** – Accept videos, transcribe speech, generate edit plans, and render output.  
+- **AI Chat Command Integration** – Users can send natural language commands to modify the edit plan.  
+- **Video Rendering** – Overlay captions and animations on videos automatically.  
+- **Error Handling** – Returns clear messages if a video cannot be processed.  
 
 ---
 
@@ -80,104 +45,152 @@ mkdir uploads outputs
 
 ```
 backend/
-├─ main.py          # FastAPI entrypoint, defines /process and /chat endpoints
-├─ transcription.py # Handles audio → text using Whisper
-├─ rules.py         # Defines rules for caption styles and animations
-├─ renderer.py      # Applies edits and generates the final video
-├─ chat.py          # Modifies edit plans based on chat commands
-uploads/             # Temporary folder for uploaded videos
-outputs/             # Folder for processed videos
-requirements.txt     # Python dependencies
+│
+├─ main.py              # FastAPI application with /process and /chat endpoints
+├─ chat.py              # AI chat command parsing and edit modifications
+├─ renderer.py          # Video rendering logic using MoviePy
+├─ transcription.py     # Video → text transcription using Whisper
+├─ rules.py             # Predefined rules for captions, styles, and animations
+├─ uploads/             # Directory for uploaded videos
+└─ outputs/             # Directory for processed/output videos
 ```
-
 ---
 
-## Running the Server
+## Getting Started
 
-From the project root:
+1. **Clone the repository**
 
-```bash
+```
+git clone https://github.com/your-username/frameflow-backend.git
+cd frameflow-backend
+```
+
+2. **Create a virtual environment (recommended)**
+
+```
+python -m venv venv
+source venv/bin/activate   # Linux / macOS
+venv\Scripts\activate      # Windows
+```
+
+3. **Install dependencies**
+
+```
+pip install -r requirements.txt
+```
+
+> `requirements.txt` should include:
+>
+> ```
+> fastapi
+> uvicorn
+> openai-whisper
+> moviepy
+> torch
+> pydantic
+> spacy
+> ```
+
+4. **Run the backend server**
+
+```
 uvicorn backend.main:app --reload
 ```
 
-* The server runs on [http://127.0.0.1:8000](http://127.0.0.1:8000)
-* `--reload` enables live-reload when you edit code
+The API will be available at `http://localhost:8000`.
 
 ---
 
 ## API Endpoints
 
-### 1. `/process` – Upload and process video
+### 1. POST `/process`
 
-* **Method:** POST
-* **Request:** multipart/form-data
-
-  * `file`: Video file (`.mp4`)
-* **Response:** JSON
-
-Example:
+* **Description**: Upload a video file, generate transcript, apply default edit rules, and render output video.
+* **Request**: `multipart/form-data` with a file field.
+* **Response**:
 
 ```json
 {
-  "video": "outputs/vdo1.mp4",
+  "video": "outputs/video.mp4",
   "edits": [
-    {"start": 0, "end": 3, "text": "Hello World", "style": "title", "animation": "fade"},
-    ...
-  ]
-}
-```
-
-### 2. `/chat` – Edit video captions via text command
-
-* **Method:** POST
-* **Query Params:**
-
-  * `video_name` – Name of uploaded video in `uploads/`
-  * `message` – Command text like `"make captions bolder"`
-* **Response:** JSON with updated video path and edits
-
-Example:
-
-```json
-{
-  "video": "outputs/vdo1.mp4",
-  "edits": [
-    {"start": 0, "end": 3, "text": "Hello World", "fontsize": 40, "animation": "fade"},
-    ...
+    { "start": 0, "end": 3, "text": "Hello World", "style": "title", "animation": "fade" }
   ]
 }
 ```
 
 ---
 
-## Notes & Troubleshooting
+### 2. POST `/chat`
 
-1. **500 Internal Server Error**
+* **Description**: Apply a chat command to an existing uploaded video and render a new output.
+* **Request**: JSON
 
-   Usually occurs when Whisper fails to extract audio from the video.
-
-   * Check if FFmpeg is installed and in PATH
-   * Confirm the video has an audio stream (`ffmpeg -i uploads/vdo1.mp4`)
-   * Windows paths should be converted to POSIX using `Path(video_path).as_posix()`
-
-2. **Python module errors**
-
-   Ensure all packages are installed in your virtual environment:
-
-```bash
-pip install moviepy python-multipart whisper fastapi uvicorn
+```json
+{
+  "video_name": "video.mp4",
+  "message": "Make captions bolder"
+}
 ```
 
-3. **Output directory issues**
+* **Response**:
 
-   `outputs/` must exist and be writable.
+```json
+{
+  "video": "outputs/video.mp4",
+  "edits": [
+    { "start": 0, "end": 3, "text": "Hello World", "style": "title", "animation": "fade", "fontsize": 40 }
+  ]
+}
+```
+
+* **Supported commands**:
+
+  * `"bolder"` → increases font size of captions.
+  * `"remove animation"` → disables caption animations.
 
 ---
 
-## Development Tips
+## Requirements
 
-* Use **try/except around transcription** to catch errors gracefully.
-* All edits are returned as a **list of segments**, which can be modified before rendering.
-* Chat commands in `chat.py` can be extended for more complex instructions.
+* Python 3.10+
+* **Libraries**:
 
 ```
+fastapi
+uvicorn
+openai-whisper
+moviepy
+torch
+pydantic
+spacy
+```
+---
+
+## Technologies
+
+* **FastAPI** – API framework
+* **MoviePy** – Video processing and rendering
+* **Whisper** – Audio transcription
+* **Pydantic** – Data validation and models
+* **Python AsyncIO** – Async wrappers for blocking video/audio operations
+
+---
+
+## Contributing
+
+We welcome contributions!
+
+1. Fork the repository
+2. Create a new branch (`git checkout -b feature/my-feature`)
+3. Make your changes and commit (`git commit -m "Add new feature"`)
+4. Push to the branch (`git push origin feature/my-feature`)
+5. Open a Pull Request
+
+---
+
+**FrameFlow Backend** – powering intelligent AI video editing with transcription, automated rules, and chat-driven edits.
+
+```
+
+---
+
