@@ -1,6 +1,4 @@
-Absolutely! Here’s a **professional and clear README** for your frontend in **Markdown**, tailored to your FrameFlow project:
-
-```markdown
+```
 # FrameFlow Frontend
 
 Welcome to the **FrameFlow** frontend! This is the web interface for your AI-powered video editing platform, built with HTML, CSS, and JavaScript. Users can upload videos, interact with AI chat commands, and edit videos seamlessly.
@@ -44,6 +42,7 @@ The frontend communicates with a FastAPI backend that handles transcription, vid
 - **Dashboard / Hero Page**: Overview, quick navigation to the editor, and user guidance.  
 
 ---
+
 ## Folder Structure
 
 ```
@@ -62,9 +61,10 @@ frontend/
 ├── dashboard.html      # Upload / Dashboard page
 ├── dashboard.css
 ├── dashboard.js
+````
 
 ---
-```
+
 ## Getting Started
 
 1. **Clone the repository**
@@ -72,7 +72,7 @@ frontend/
 ```bash
 git clone https://github.com/your-username/frameflow-frontend.git
 cd frameflow-frontend
-````
+```
 
 2. **Open in browser**
 
@@ -128,4 +128,5 @@ We welcome contributions!
 **FrameFlow Frontend** – intuitive AI-powered video editing for everyone.
 
 ```
+
 
