@@ -2,17 +2,23 @@
 
 def apply_rules(segments):
     """
-    Decide captions, animations, and styles
+    Decide captions, animations, and emphasis
     """
     edits = []
 
     for i, seg in enumerate(segments):
+        words = [w["word"] for w in seg.get("words", []) if len(w["word"]) > 3]
+
+        # Simple emphasis heuristic: longest word
+        highlight_word = max(words, key=len) if words else None
+
         edit = {
             "start": seg["start"],
             "end": seg["end"],
             "text": seg["text"],
             "style": "caption",
-            "animation": "fade"
+            "animation": "fade",
+            "highlight": highlight_word
         }
 
         if i == 0:
