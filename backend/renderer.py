@@ -5,66 +5,74 @@ from moviepy.video.VideoClip import TextClip
 from moviepy.video.compositing.CompositeVideoClip import CompositeVideoClip
 
 
+def apply_animation(txt, animation_type):
+    """
+    Apply simple, predefined animations
+    """
+    if animation_type == "fade":
+        return txt.fadein(0.3)
+
+    if animation_type == "pop":
+        return txt.resize(lambda t: 1 + 0.08 * min(t, 0.3))
+
+    return txt  # none
+
+
 def render_video(video_path, edit_plan):
     clip = VideoFileClip(video_path)
     txt_clips = []
 
     video_w, video_h = clip.size
+    base_y = video_h - 120
 
     for e in edit_plan:
         start = e["start"]
         end = e["end"]
         text = e["text"]
         highlight = e.get("highlight")
-
-        base_y = video_h - 120  # bottom caption area
-        base_x = video_w // 2
+        animation = e.get("animation", "none")
 
         if highlight and highlight in text:
             before, word, after = text.partition(highlight)
 
-            # BEFORE TEXT
-            before_clip = (
-                TextClip(
-                    before,
-                    font="Arial",
-                    font_size=26,
-                    color="white",
-                    method="label"
-                )
-                .with_start(start)
-                .with_end(end)
+            before_clip = TextClip(
+                before,
+                font="Arial",
+                font_size=26,
+                color="white",
+                method="label"
             )
 
-            # HIGHLIGHTED WORD
-            highlight_clip = (
-                TextClip(
-                    word,
-                    font="Arial-Bold",
-                    font_size=32,
-                    color="yellow",
-                    method="label"
-                )
-                .with_start(start)
-                .with_end(end)
+            highlight_clip = TextClip(
+                word,
+                font="Arial-Bold",
+                font_size=32,
+                color="yellow",
+                method="label"
             )
 
-            # AFTER TEXT
-            after_clip = (
-                TextClip(
-                    after,
-                    font="Arial",
-                    font_size=26,
-                    color="white",
-                    method="label"
-                )
-                .with_start(start)
-                .with_end(end)
+            after_clip = TextClip(
+                after,
+                font="Arial",
+                font_size=26,
+                color="white",
+                method="label"
             )
 
-            # Position clips inline
+            # Apply timing
+            before_clip = before_clip.with_start(start).with_end(end)
+            highlight_clip = highlight_clip.with_start(start).with_end(end)
+            after_clip = after_clip.with_start(start).with_end(end)
+
+            # Apply animations
+            before_clip = apply_animation(before_clip, animation)
+            highlight_clip = apply_animation(highlight_clip, animation)
+            after_clip = apply_animation(after_clip, animation)
+
+            # Position inline
+            center_x = video_w // 2
             before_clip = before_clip.with_position(
-                (base_x - before_clip.w // 2, base_y)
+                (center_x - before_clip.w // 2, base_y)
             )
 
             highlight_clip = highlight_clip.with_position(
@@ -78,21 +86,22 @@ def render_video(video_path, edit_plan):
             txt_clips.extend([before_clip, highlight_clip, after_clip])
 
         else:
-            # Normal caption (no highlight)
-            txt = (
-                TextClip(
-                    text,
-                    font="Arial",
-                    font_size=26,
-                    color="white",
-                    method="caption",
-                    size=(video_w * 0.8, None)
-                )
-                .with_start(start)
-                .with_end(end)
-                .with_position(("center", "bottom"))
+            txt = TextClip(
+                text,
+                font="Arial",
+                font_size=26,
+                color="white",
+                method="caption",
+                size=(video_w * 0.8, None)
             )
 
+            txt = (
+                txt.with_start(start)
+                   .with_end(end)
+                   .with_position(("center", "bottom"))
+            )
+
+            txt = apply_animation(txt, animation)
             txt_clips.append(txt)
 
     final_video = CompositeVideoClip([clip, *txt_clips]).with_audio(clip.audio)
