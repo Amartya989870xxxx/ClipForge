@@ -45,23 +45,22 @@ The frontend communicates with a FastAPI backend that handles transcription, vid
 
 ## Folder Structure
 
-```
 frontend/
 │
-├── index.html          # Landing / Hero page
-├── script.js           # Landing / Hero JS
-├── style.css           # Global styles shared across pages
+├─ index.html          # Landing / Hero page
+├─ script.js           # Landing / Hero JS
+├─ style.css           # Global styles shared across pages
 │
 # Studio files
-├── studio.html         # Studio / Editor page
-├── studio.css
-├── studio.js
+├─ studio.html         # Studio / Editor page
+├─ studio.css
+├─ studio.js
 │
 # Dashboard / Upload files
-├── dashboard.html      # Upload / Dashboard page
-├── dashboard.css
-├── dashboard.js
-````
+├─ dashboard.html      # Upload / Dashboard page
+├─ dashboard.css
+├─ dashboard.js
+
 
 ---
 
