@@ -1,101 +1,77 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>SchemaFlow — Dashboard</title>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Upload | FrameFlow</title>
+
+  <!-- Global styles -->
+  <link rel="stylesheet" href="style.css" />
+
+  <!-- Upload page styles -->
   <link rel="stylesheet" href="dashboard.css" />
 </head>
-<body>
-  <header class="topbar">
-    <a class="brand" href="index.html">SchemaFlow</a>
-    <nav class="navlinks">
-  <a href="index.html">Home</a>
-  <a href="upload.html">Upload</a>
-  <a href="dashboard.html" class="active">Dashboard</a>
-  <!-- <a href="schemas.html">Schemas</a>
-  <a href="schema-history.html">History</a>
-  <a href="records.html">Records</a> -->
-</nav>
-  </header>
 
-  <main class="container">
+<body class="dashboard-page">
 
-    <!-- METRICS -->
-    <section class="metrics">
 
-      <!-- RAW RECORDS CARD -->
-      <div class="card">
-        <h3>Raw Records</h3>
-        <div id="rawCount" class="metric-number">--</div>
+  <!-- Main Upload Layout -->
+  <div class="upload-wrapper upload-layout">
+
+    <!-- LEFT: Sources Panel -->
+    <div class="sources-panel">
+      <h3>Uploaded sources</h3>
+
+      <div id="sourceList" class="source-list">
+        <p class="empty-text">No sources yet</p>
       </div>
 
-      <!-- NORMALIZED RECORDS CARD -->
-      <div class="card">
-        <h3>Normalized Records</h3>
-        <div id="normCount" class="metric-number">--</div>
+      <button id="addMoreBtn" class="secondary-btn">
+        + Add sources
+      </button>
+    </div>
+
+    <!-- RIGHT: Upload Area -->
+    <div class="upload-main">
+
+      <div class="drop-zone" id="dropZone">
+        <div class="upload-icon">⬆</div>
+        <h2>Upload your video</h2>
+        <p>
+          Drag & drop video or
+          <span id="chooseFile">choose file</span>
+        </p>
+        <p class="drop-types">MP4, MP3</p>
+
+        <input
+          type="file"
+          id="hiddenFileInput"
+          hidden
+          multiple
+          accept="video/mp4,audio/mpeg"
+        />
       </div>
 
-      <!-- SCHEMA VERSIONS CARD -->
-      <div class="card">
-        <h3>Schema Versions</h3>
-        <div id="schemaCount" class="metric-number">--</div>
-      </div>
+      <button id="startEditingBtn" class="start-btn" disabled>
+        Start editing
+        
+      </button>
 
-      <!-- FILE TYPES CARD -->
-      <div class="card">
-        <h3>File Types</h3>
-        <div id="fileCount" class="metric-number">--</div>
-      </div>
+      <p id="uploadStatus"></p>
+    </div>
 
-    </section>
-
-
-    <!-- PANELS -->
-    <section class="panels">
-
-      <!-- SCHEMA LIST TABLE -->
-      <div class="panel" style="flex: 1.2">
-        <h3>Schema Versions</h3>
-        <table class="list-table">
-          <thead>
-            <tr>
-              <th>Version</th>
-              <th>Samples</th>
-              <th>Last Updated</th>
-              <th></th>
-            </tr>
-          </thead>
-          <tbody id="schemaList"></tbody>
-        </table>
-      </div>
-
-      <!-- RECENT UPLOADS TABLE -->
-      <div class="panel" style="flex: 1">
-        <h3>Recent Uploads</h3>
-        <table class="list-table">
-          <thead>
-            <tr>
-              <th>Filename</th>
-              <th>Type</th>
-              <th>Time</th>
-            </tr>
-          </thead>
-          <tbody id="uploadList"></tbody>
-        </table>
-      </div>
-
-    </section>
-  </main>
+  </div>
 
   <script src="dashboard.js"></script>
+
   <script>
-  const links = document.querySelectorAll(".navlinks a");
-  links.forEach(a => {
-    if (a.href.includes(location.pathname)) {
-      a.classList.add("active");
-    }
-  });
-</script>
+    // const links = document.querySelectorAll(".navlinks a");
+    // links.forEach(a => {
+    //   if (a.href.includes(location.pathname)) {
+    //     a.classList.add("active");
+    //   }
+    // });
+  </script>
+
 </body>
 </html>
